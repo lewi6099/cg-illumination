@@ -199,15 +199,18 @@ class Renderer {
         let vertex_positions = [
             -0.866, -0.750,  0.000, // vertex 0 (x,y,z)
              0.866, -0.750,  0.000, // vertex 1 (x,y,z)
-             0.000,  0.750,  0.000 // vertex 2 (x,y,z)
+             0.000,  0.750,  0.000, // vertex 2 (x,y,z)
+             0.000, 0.500, 0.500
         ];
         let vertex_colors = [
             1.0, 0.0, 0.0, 1.0,     // color 0 (RGBA)
             0.0, 1.0, 0.0, 1.0,     // color 1 (RGBA)
+            0.0, 0.0, 1.0, 1.0,     // color 2 (RGBA)
             0.0, 0.0, 1.0, 1.0     // color 2 (RGBA)
         ];
         let triangle_indices = [
-            0, 1, 2                // connect vertices 0,1,2 to make a triangle
+            0, 1, 2,
+            2, 3, 1               // connect vertices 0,1,2 to make a triangle
         ];
         let vertex_data = new VertexData();
         vertex_data.positions = vertex_positions;
