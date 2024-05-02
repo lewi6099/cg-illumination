@@ -28,7 +28,7 @@ out vec3 specular_illum;
 
 void main() {
     // Pass diffuse and specular illumination onto the fragment shader
-    diffuse_illum = vec3(0.0, 0.0, 0.0);
+    diffuse_illum = vec3(0.0, 0.0, 0.0); //these are the lights we need to modify
     specular_illum = vec3(0.0, 0.0, 0.0);
 
     // Pass vertex texcoord onto the fragment shader

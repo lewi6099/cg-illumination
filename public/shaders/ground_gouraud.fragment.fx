@@ -18,6 +18,7 @@ uniform vec3 ambient; // Ia
 out vec4 FragColor;
 
 void main() {
+    // multiply the color by diffuse_illum adn by specular_illum
     vec3 model_color = mat_color * texture(mat_texture, model_uv).rgb;
     
     // Color
