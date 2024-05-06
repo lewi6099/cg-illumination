@@ -8,7 +8,7 @@ in vec2 model_uv;
 
 // Uniforms
 // material
-uniform vec3 mat_color;
+uniform vec3 mat_color; //Ka
 uniform vec3 mat_specular;
 uniform float mat_shininess;
 uniform sampler2D mat_texture;
@@ -23,12 +23,17 @@ uniform vec3 light_colors[8]; // Ip
 // Output
 out vec4 FragColor;
 
-vec3 N_cross_L = Vector3.Dot(model_normal, light_positions[0])
+// light_positions (L) is a vector pointing to the light
+     // vec3 N_cross_L = Vector3.Dot(model_normal, light_positions[0]) --> wrong way to do it becuase light_positions is a vector not a point...?
 
-//L is a vecotr pointing to the light
-// subtract the light position from the model position
+// subtract the light position from the model position to get L
+vec3 L = normalize(light_positions[0].subtract(model_position)) //or maybe the other way around?
+// vec3 L = normalize(model_position.subtract(light_positions[0])) //or maybe the other way around?
 
-vec3 R = (2*N_cross_L*model_normal).subtract(light_positions);
+
+vec3 N_cross_L = Vector3.Dot(model_normal, L)
+
+vec3 R = (2*N_cross_L*model_normal).subtract(L); //used for specular light
 
 vec3 ambient_light = ambient * mat_color;
 vec3 diffuse_light = light_colors[0] * mat_color * N_cross_L;

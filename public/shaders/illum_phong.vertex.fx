@@ -21,11 +21,14 @@ out vec2 model_uv;
 
 void main() {
     // Pass vertex position onto the fragment shader
-    mat3 new_matrix = mat3(world)
-    mat3 transpose_matrix = transpose(new_matrix)
-    mat3 inverse_matrix = inverse(transpose_matrix)
-    
-    model_position = position * inverse_matrix;
+
+    // ------- HAVE PROF CHECK THESE 4 LINES OF CODE ----------------
+    mat3 new_matrix = mat3(world) //create a 3x3 matrix of the world matrix
+    mat3 transpose_matrix = transpose(new_matrix) //transpose this world matrix 
+    mat3 inverse_matrix = inverse(transpose_matrix) //take the inverse of this transpose matrix
+
+    // need to do this to acount for scaling! 
+    model_position = position * inverse_matrix; //multiply the position by this inverse and transposed world matrix
     // Pass vertex normal onto the fragment shader
     model_normal = normal; //model's normal in world space
     // Pass vertex texcoord onto the fragment shader
