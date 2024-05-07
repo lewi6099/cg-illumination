@@ -23,25 +23,18 @@ uniform vec3 light_colors[8]; // Ip
 // Output
 out vec4 FragColor;
 
-// light_positions (L) is a vector pointing to the light
-     // vec3 N_cross_L = Vector3.Dot(model_normal, light_positions[0]) --> wrong way to do it becuase light_positions is a vector not a point...?
-
-// subtract the light position from the model position to get L
-vec3 L = normalize(light_positions[0].subtract(model_position)) //or maybe the other way around?
-// vec3 L = normalize(model_position.subtract(light_positions[0])) //or maybe the other way around?
-
-
-vec3 N_cross_L = Vector3.Dot(model_normal, L)
-
-vec3 R = (2*N_cross_L*model_normal).subtract(L); //used for specular light
-
-vec3 ambient_light = ambient * mat_color;
-vec3 diffuse_light = light_colors[0] * mat_color * N_cross_L;
-vec3 specular_light = light_colors[0] * mat_specular * pow(Vector3.Dot(R, camera_position), mat_shininess);
-
-vec3 combined_light = ambient_light + diffuse_light + specular_light;
-
 void main() {
-    // Color
-    FragColor = vec4(mat_color * combined_light * texture(mat_texture, model_uv).rgb, 1.0);
+    // variables needed for the light equations:
+    vec3 L = normalize(light_positions[0] - model_position); // normalized light direction
+    float N_cross_L = dot(model_normal, L); // dot product of normal and the normalized light direction
+    vec3 R = (2.0*N_cross_L*model_normal) - L; //used for specular light
+
+    // light equations
+    vec3 ambient_light = ambient * mat_color; 
+    vec3 diffuse_light = light_colors[0] * mat_color * N_cross_L; 
+    vec3 specular_light = light_colors[0] * mat_specular * pow(dot(R, camera_position), mat_shininess); // makes the top of the box white and the sides of the sphere white
+
+    vec3 combined_light = ambient_light + diffuse_light + specular_light;
+
+    FragColor = vec4(mat_color * diffuse_light * texture(mat_texture, model_uv).rgb, 1.0);
 }
