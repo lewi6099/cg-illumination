@@ -23,6 +23,8 @@ out vec3 model_normal;
 out vec2 model_uv;
 
 void main() {
+    // -----> Question - do we need to do this transposing and invertgin for the ground and for the illum in the phong
+
     // Get initial position of vertex (prior to height displacement)
     vec4 world_pos = world * vec4(position, 1.0);
 

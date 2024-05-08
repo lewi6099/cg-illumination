@@ -30,16 +30,26 @@ out vec3 diffuse_illum;
 out vec3 specular_illum;
 
 void main() {
-    // Get initial position of vertex (prior to height displacement)
-    vec4 world_pos = world * vec4(position, 1.0);
+    // ---------------- Issue is that we don't have the normal here ---------------------
+    // so our thought would be to then calculate the lighting in the fragment shader but we don't have the normal there either
+        //  - do we just create the normal ourselves?
+    
+    // Calculations to be used for illum equations
+    vec3 L = normalize(light_positions[0] - position); // normalized light direction
+    float N_cross_L = dot(normal, L); // dot product of normal and the normalized light direction
+    vec3 R = normalize((2.0*N_cross_L*normal) - L); //used for specular light
+    vec3 normalized_view_direction = normalize(camera_position - position);
 
-    // Pass diffuse and specular illumination onto the fragment shader
-    diffuse_illum = vec3(0.0, 0.0, 0.0);
-    specular_illum = vec3(0.0, 0.0, 0.0);
-
+    // calculating diffuse and specular as much as we can in the vertex shader
+    diffuse_illum = light_colors[0] * N_cross_L; // still need to mulitply by mat_color
+    specular_illum = light_colors[0] * pow(dot(R, normalized_view_direction), mat_shininess); //still need to mulitply by mat_specular
+    
     // Pass vertex texcoord onto the fragment shader
     model_uv = uv;
 
     // Transform and project vertex from 3D world-space to 2D screen-space
-    gl_Position = projection * view * world_pos;
+    gl_Position = projection * view * world;
+
+    //illum does it:
+    // gl_Position = projection * view * world * vec4(position, 1.0);
 }

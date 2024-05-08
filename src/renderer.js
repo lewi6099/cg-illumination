@@ -24,7 +24,7 @@ class Renderer {
                 ground_subdivisions: [50, 50],
                 ground_mesh: null,
                 camera: null,
-                ambient: new Color3(0.2, 0.2, 0.2),
+                ambient: new Color3(0.9, 0.1, 0.2),
                 lights: [],
                 models: []
             },
@@ -87,7 +87,7 @@ class Renderer {
         let ground_heightmap = new Texture(BASE_URL + 'heightmaps/default.png', scene);
         ground_mesh.scaling = new Vector3(20.0, 1.0, 20.0);
         ground_mesh.metadata = {
-            mat_color: new Color3(0.10, 0.65, 0.15),
+            mat_color: new Color3(0.80, 0.65, 0.75),
             mat_texture: white_texture,
             mat_specular: new Color3(0.0, 0.0, 0.0),
             mat_shininess: 1,
