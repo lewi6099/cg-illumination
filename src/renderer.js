@@ -102,13 +102,13 @@ class Renderer {
         ground_mesh.material = materials['ground_' + this.shading_alg];
         
         // Create other models
-        let sphere = CreateSphere('sphere', {segments: 32}, scene);
+        let sphere = CreateSphere('sphere', {segments: 16}, scene);
         sphere.position = new Vector3(1.0, 0.5, 3.0);
         sphere.metadata = {
             mat_color: new Color3(0.10, 0.35, 0.88),
             mat_texture: white_texture,
-            mat_specular: new Color3(0.8, 0.8, 0.8),
-            mat_shininess: 16,
+            mat_specular: new Color3(1.0, 1.0, 1.0),
+            mat_shininess: 128,
             texture_scale: new Vector2(1.0, 1.0)
         }
         sphere.material = materials['illum_' + this.shading_alg];

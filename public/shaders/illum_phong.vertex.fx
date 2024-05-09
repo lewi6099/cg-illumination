@@ -28,9 +28,9 @@ void main() {
     mat3 inverse_matrix = inverse(transpose_matrix); //take the inverse of this transpose matrix
 
     // QUESTION: when you comment out the "* inverse_matrix" nothing seems to change...
-    model_position = position* inverse_matrix; //multiply the position by this inverse and transposed world matrix
+    model_position = vec3(world * vec4(position, 1.0)); //multiply the position by this inverse and transposed world matrix
     // Pass vertex normal onto the fragment shader
-    model_normal = normal; //model's normal in world space
+    model_normal = inverse_matrix * normal; //model's normal in world space
     // Pass vertex texcoord onto the fragment shader
     model_uv = uv;
 
