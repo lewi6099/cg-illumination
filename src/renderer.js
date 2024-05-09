@@ -30,7 +30,7 @@ class Renderer {
             },
             {
                 scene: new Scene(this.engine),
-                background_color: new Color4(0.1, 0.4, 0.2, 1.0),
+                background_color: new Color4(0.0, 0.0, 0.0, 1.0),
                 materials: null,
                 ground_subdivisions: [50, 50],
                 ground_mesh: null,
@@ -163,7 +163,7 @@ class Renderer {
         light0.specular = new Color3(1.0, 1.0, 1.0);
         current_scene.lights.push(light0);
 
-        let light1 = new PointLight('light1', new Vector3(0.0, 3.0, 0.0), scene);
+        let light1 = new PointLight('light1', new Vector3(-1.0, 0.5, 2.0), scene);
         light1.diffuse = new Color3(1.0, 1.0, 1.0);
         light1.specular = new Color3(1.0, 1.0, 1.0);
         current_scene.lights.push(light1);
@@ -196,33 +196,88 @@ class Renderer {
         sphere.material = materials['illum_' + this.shading_alg];
         current_scene.models.push(sphere);
 
-
         // Create mesh model
-        let triangle = new Mesh('triangle', scene);
+        let stairs = new Mesh('stairs', scene);
         let vertex_positions = [
-            -0.866, -0.750,  0.000, // vertex 0 (x,y,z)
-             0.866, -0.750,  0.000, // vertex 1 (x,y,z)
-             0.000,  0.750,  0.000, // vertex 2 (x,y,z)
-             0.000, 0.500, 0.500
+            0.1, 0.9, 0.2, // 0
+            0.3, 0.9, 0.2, // 1
+            0.3, 0.7, 0.2, // 2
+            0.5, 0.7, 0.2, // 3
+            0.5, 0.5, 0.2, // 4
+            0.7, 0.5, 0.2, // 5
+            0.7, 0.3, 0.2, // 6
+            0.9, 0.3, 0.2, // 7
+            0.9, 0.1, 0.2, // 8
+            0.7, 0.1, 0.2, // 9
+            0.5, 0.1, 0.2, // 10
+            0.3, 0.1, 0.2, // 11
+            0.1, 0.1, 0.2, // 12
+
+            0.1, 0.9, -0.2, // 13
+            0.3, 0.9, -0.2, // 14
+            0.3, 0.7, -0.2, // 15
+            0.5, 0.7, -0.2, // 16
+            0.5, 0.5, -0.2, // 17
+            0.7, 0.5, -0.2, // 18
+            0.7, 0.3, -0.2, // 19
+            0.9, 0.3, -0.2, // 20
+            0.9, 0.1, -0.2, // 21
+            0.7, 0.1, -0.2, // 22
+            0.5, 0.1, -0.2, // 23
+            0.3, 0.1, -0.2, // 24
+            0.1, 0.1, -0.2, // 25
+
         ];
-        let vertex_colors = [
-            1.0, 0.0, 0.0, 1.0,     // color 0 (RGBA)
-            0.0, 1.0, 0.0, 1.0,     // color 1 (RGBA)
-            0.0, 0.0, 1.0, 1.0,     // color 2 (RGBA)
-            0.0, 0.0, 1.0, 1.0     // color 2 (RGBA)
-        ];
-        let triangle_indices = [
-            0, 1, 2,
-            2, 3, 1               // connect vertices 0,1,2 to make a triangle
+        let stairs_indices = [
+            0, 1, 12,
+            1, 11, 12,
+            2, 3, 11,
+            3, 10, 11,
+            4, 5, 10,
+            5, 9, 10,
+            6, 7, 9,
+            7, 8, 9,
+
+            13, 14, 25,
+            14, 24, 25,
+            15, 16, 24,
+            16, 23, 24,
+            17, 18, 23,
+            18, 22, 23,
+            19, 20, 22,
+            20, 21, 22,
+
+            0, 12, 13,
+            12, 13, 25,
+
+            0, 13, 14,
+            0, 1, 14,
+            2, 3, 15,
+            3, 15, 16,
+            4, 17, 18,
+            4, 5, 18,
+            6, 7, 19,
+            7, 19, 20,
+
+            12, 8, 25,
+            8, 21, 25,
+
+            1, 2, 14,
+            2, 14, 15,
+            3, 4, 16,
+            4, 16, 17,
+            5, 6, 18,
+            6, 18, 19,
+            7, 8, 20,
+            8, 20, 21
         ];
         let vertex_data = new VertexData();
         vertex_data.positions = vertex_positions;
-        vertex_data.colors = vertex_colors;
-        vertex_data.indices = triangle_indices;
-        vertex_data.applyToMesh(triangle);
+        vertex_data.indices = stairs_indices;
+        vertex_data.applyToMesh(stairs);
 
-        triangle.position = new Vector3(-1.0, 0.5, 2.0);
-        triangle.metadata = {
+        stairs.position = new Vector3(-1.0, 0.5, 2.0);
+        stairs.metadata = {
             mat_color: new Color3(0.10, 0.35, 0.88),
             mat_texture: white_texture,
             mat_specular: new Color3(0.8, 0.8, 0.8),
@@ -230,9 +285,9 @@ class Renderer {
             texture_scale: new Vector2(1.0, 1.0)
         }
 
-        triangle.scaling = new Vector3(2.0, 2.0, 2.0);
-        triangle.material = materials['illum_' + this.shading_alg];
-        current_scene.models.push(triangle);
+        stairs.scaling = new Vector3(2.0, 2.0, 2.0);
+        stairs.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(stairs);
 
 
         // Animation function - called before each frame gets rendered
