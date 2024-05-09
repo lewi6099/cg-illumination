@@ -28,23 +28,23 @@ out vec3 specular_illum;
 
 
 void main() {
-    // ---- CALCULATE GL_POSITION ---- 
-    // ------- HAVE PROF CHECK THESE 4 LINES OF CODE/Mulitplying by the inverse doesn't seem to do anything ----------------
-    // mat3 new_matrix = mat3(world) //create a 3x3 matrix of the world matrix
-    // mat3 transpose_matrix = transpose(new_matrix) //transpose this world matrix 
-    // mat3 inverse_matrix = inverse(transpose_matrix) //take the inverse of this transpose matrix
-    // gl_Pposition = position * inverse_matrix; //multiply the position by this inverse and transposed world matrix
+    vec3 model_position = vec3(world * vec4(position, 1.0));
 
+    mat3 new_matrix = mat3(world); //create a 3x3 matrix of the world matrix
+    mat3 transpose_matrix = transpose(new_matrix); //transpose this world matrix 
+    mat3 inverse_matrix = inverse(transpose_matrix);
+
+    vec3 model_normal = normalize(inverse_matrix * normal);
 
     // Calculations to be used for illum equations
-    vec3 L = normalize(light_positions[0] - position); // normalized light direction
-    float N_cross_L = dot(normal, L); // dot product of normal and the normalized light direction
-    vec3 R = normalize((2.0*N_cross_L*normal) - L); //used for specular light
-    vec3 normalized_view_direction = normalize(camera_position - position);
+    vec3 L = normalize(light_positions[0] - model_position); // normalized light direction
+    float N_cross_L = max(dot(model_normal, L), 0.0); // dot product of normal and the normalized light direction
+    vec3 R = normalize((2.0 * N_cross_L * model_normal) - L); //used for specular light
+    vec3 normalized_view_direction = normalize(camera_position - model_position);
 
     // calculating diffuse and specular as much as we can in the vertex shader
-    diffuse_illum = light_colors[0] * N_cross_L; // still need to mulitply by mat_color
-    specular_illum = light_colors[0] * pow(dot(R, normalized_view_direction), mat_shininess); //still need to mulitply by mat_specular
+    diffuse_illum = max(light_colors[0] * N_cross_L, vec3(0.0)); // still need to mulitply by mat_color
+    specular_illum = max(light_colors[0] * pow(dot(R, normalized_view_direction), mat_shininess), vec3(0.0)); //still need to mulitply by mat_specular
     
     // Pass vertex texcoord onto the fragment shader
     model_uv = uv;

@@ -189,8 +189,8 @@ class Renderer {
         sphere.metadata = {
             mat_color: new Color3(0.10, 0.35, 0.88),
             mat_texture: white_texture,
-            mat_specular: new Color3(0.8, 0.8, 0.8),
-            mat_shininess: 16,
+            mat_specular: new Color3(1.0, 1.0, 1.0),
+            mat_shininess: 128,
             texture_scale: new Vector2(1.0, 1.0)
         }
         sphere.material = materials['illum_' + this.shading_alg];
@@ -226,7 +226,6 @@ class Renderer {
             0.5, 0.1, -0.2, // 23
             0.3, 0.1, -0.2, // 24
             0.1, 0.1, -0.2, // 25
-
         ];
         let stairs_indices = [
             0, 1, 12,
@@ -278,10 +277,10 @@ class Renderer {
 
         stairs.position = new Vector3(-1.0, 0.5, 2.0);
         stairs.metadata = {
-            mat_color: new Color3(0.10, 0.35, 0.88),
+            mat_color: new Color3(0.8, 0.35, 0.88),
             mat_texture: white_texture,
-            mat_specular: new Color3(0.8, 0.8, 0.8),
-            mat_shininess: 16,
+            mat_specular: new Color3(1.0, 1.0, 1.0),
+            mat_shininess: 128,
             texture_scale: new Vector2(1.0, 1.0)
         }
 
