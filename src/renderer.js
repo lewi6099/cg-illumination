@@ -43,14 +43,18 @@ class Renderer {
         this.active_scene = 0;
         this.active_light = 0;
         this.shading_alg = 'gouraud';
-
+        
+        // create event listener for W, A, S, D button handling
+        document.addEventListener('keydown', (event) => {
+            this.onKeyDown(event, this.active_light, this.active_scene, this.scenes);
+        })
+        
         this.scenes.forEach((scene, idx) => {
             scene.materials = material_callback(scene.scene);
             scene.ground_mesh = ground_mesh_callback(scene.scene, scene.ground_subdivisions);
             this['createScene'+ idx](idx);
         });
     }
-
     createScene0(scene_idx) {
         let current_scene = this.scenes[scene_idx];
         let scene = current_scene.scene;
@@ -109,7 +113,7 @@ class Renderer {
         }
         sphere.material = materials['illum_' + this.shading_alg];
         current_scene.models.push(sphere);
-
+        
         let box = CreateBox('box', {width: 2, height: 1, depth: 1}, scene);
         box.position = new Vector3(-1.0, 0.5, 2.0);
         box.metadata = {
@@ -121,7 +125,6 @@ class Renderer {
         }
         box.material = materials['illum_' + this.shading_alg];
         current_scene.models.push(box);
-
 
         // Animation function - called before each frame gets rendered
         scene.onBeforeRenderObservable.add(() => {
@@ -290,6 +293,30 @@ class Renderer {
     setActiveLight(idx) {
         console.log(idx);
         this.active_light = idx;
+    }
+
+    onKeyDown(event, active_light, active_scene, scenes) {
+        let translate_distance = 1;
+        switch (event.keyCode) {
+            case 65: // A key
+                scenes[active_scene].lights[active_light].position.x -= translate_distance;
+                break;
+            case 68: // D key
+                scenes[active_scene].lights[active_light].position.x += translate_distance;
+                break;
+            case 83: // S key
+                scenes[active_scene].lights[active_light].position.z += translate_distance;
+                break;
+            case 87: // W key
+                scenes[active_scene].lights[active_light].position.z -= translate_distance;
+                break;
+            case 70: // F key
+                scenes[active_scene].lights[active_light].position.y -= translate_distance;
+                break;
+            case 82: // R key
+                scenes[active_scene].lights[active_light].position.y += translate_distance;
+                break;
+        }
     }
 }
 
