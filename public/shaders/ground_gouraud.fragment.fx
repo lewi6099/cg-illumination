@@ -20,9 +20,7 @@ out vec4 FragColor;
 void main() {
     vec3 color = mat_color * texture(mat_texture, model_uv).rgb;
     vec3 ambient_light = max(ambient, vec3(0.0));
-    
     vec3 combined_light = (ambient_light * color) + (diffuse_illum * color) + (specular_illum * mat_specular);
     
-    // Color
     FragColor = vec4(combined_light, 1.0);
 }
