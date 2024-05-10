@@ -86,6 +86,11 @@ class Renderer {
         light1.specular = new Color3(1.0, 1.0, 1.0);
         current_scene.lights.push(light1);
 
+        let light2 = new PointLight('light2', new Vector3(5.0, 1.0, 5.0), scene);
+        light2.diffuse = new Color3(1.0, 1.0, 1.0);
+        light2.specular = new Color3(1.0, 1.0, 1.0);
+        current_scene.lights.push(light2);
+
         // Create ground mesh
         let white_texture = RawTexture.CreateRGBTexture(new Uint8Array([255, 255, 255]), 1, 1, scene);
         let ground_heightmap = new Texture(BASE_URL + 'heightmaps/default.png', scene);
