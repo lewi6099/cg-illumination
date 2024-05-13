@@ -103,7 +103,8 @@ function selectShadingAlgorithm(event) {
 }
 
 function updateHeightScale(event) {
-    data.height_scale = event.target.value / 10.0
+    data.height_scale = event.target.value / 10.0;
+    console.log("height scale"+data.height_scale); // we have the value
     data.renderer.setHeightScale(data.height_scale);
 }
 

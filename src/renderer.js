@@ -623,8 +623,21 @@ class Renderer {
         light0.specular = new Color3(1.0, 1.0, 1.0);
         current_scene.lights.push(light0);
 
-        // Create ground mesh
+        // Ground Mesh creation 
         let white_texture = RawTexture.CreateRGBTexture(new Uint8Array([255, 255, 255]), 1, 1, scene);
+        let ground_heightmap = new Texture(BASE_URL + 'heightmaps/default.png', scene);
+        ground_mesh.scaling = new Vector3(20.0, 1.0, 20.0);
+        ground_mesh.metadata = {
+            mat_color: new Color3(0.80, 0.65, 0.75),
+            mat_texture: white_texture,
+            mat_specular: new Color3(0.0, 0.0, 0.0),
+            mat_shininess: 1,
+            texture_scale: new Vector2(1.0, 1.0),
+            height_scalar: 1.0,
+            heightmap: ground_heightmap
+        }
+        ground_mesh.material = materials['ground_' + this.shading_alg];
+
         
         // Create other models
         let sphere0 = CreateSphere('sphere0', {segments: 16}, scene);
@@ -634,6 +647,7 @@ class Renderer {
             mat_texture: white_texture,
             mat_specular: new Color3(1.0, 1.0, 1.0),
             mat_shininess: 128,
+            // height_scalar: 1.0,
             texture_scale: new Vector2(1.0, 1.0)
         }
         sphere0.material = materials['illum_' + this.shading_alg];
@@ -785,9 +799,14 @@ class Renderer {
     }
 
     setHeightScale(scale) {
+        let i = 0;
         this.scenes.forEach((scene) => {
+            console.log(i);
+            i++;
             let ground_mesh = scene.ground_mesh;
-            ground_mesh.metadata.height_scalar = scale;
+            ground_mesh.metadata.height_scalar = scale; //we don't have ground for scene 3....
+            console.log(ground_mesh.metadata.height_scalar);
+            console.log('here');// does get here but still has an issue 
         });
     }
 
