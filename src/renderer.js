@@ -9,6 +9,7 @@ import { RawTexture } from '@babylonjs/core/Materials/Textures/rawTexture';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color';
 import { Vector2, Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { CreateCylinder } from '@babylonjs/core';
 
 const BASE_URL = import.meta.env.BASE_URL || '/';
 
@@ -25,6 +26,28 @@ class Renderer {
                 ground_mesh: null,
                 camera: null,
                 ambient: new Color3(0.9, 0.1, 0.2),
+                lights: [],
+                models: []
+            },
+            {
+                scene: new Scene(this.engine),
+                background_color: new Color4(0.0, 0.0, 0.0, 1.0),
+                materials: null,
+                ground_subdivisions: [50, 50],
+                ground_mesh: null,
+                camera: null,
+                ambient: new Color3(0.2, 0.2, 0.2),
+                lights: [],
+                models: []
+            },
+            {
+                scene: new Scene(this.engine),
+                background_color: new Color4(0.0, 0.0, 0.0, 1.0),
+                materials: null,
+                ground_subdivisions: [50, 50],
+                ground_mesh: null,
+                camera: null,
+                ambient: new Color3(0.2, 0.2, 0.2),
                 lights: [],
                 models: []
             },
@@ -414,7 +437,7 @@ class Renderer {
 
             // front of stairs
             47, 48, 55,
-            28, 55, 56,
+            48, 55, 56,
             49, 50, 57,
             50, 57, 58,
             51, 52, 59,
@@ -437,10 +460,281 @@ class Renderer {
             texture_scale: new Vector2(1.0, 1.0)
         }
 
-        stairs.scaling = new Vector3(2.0, 2.0, 2.0);
+        stairs.scaling = new Vector3(4.0, 4.0, 4.0);
         stairs.material = materials['illum_' + this.shading_alg];
         current_scene.models.push(stairs);
 
+
+        // Animation function - called before each frame gets rendered
+        scene.onBeforeRenderObservable.add(() => {
+            // update models and lights here (if needed)
+            // ...
+
+            // update uniforms in shader programs
+            this.updateShaderUniforms(scene_idx, materials['illum_' + this.shading_alg]);
+            this.updateShaderUniforms(scene_idx, materials['ground_' + this.shading_alg]);
+        });
+    }
+
+    createScene2(scene_idx) {
+        let current_scene = this.scenes[scene_idx];
+        let scene = current_scene.scene;
+        let materials = current_scene.materials;
+        let ground_mesh = current_scene.ground_mesh;
+
+        // Set scene-wide / environment values
+        scene.clearColor = current_scene.background_color;
+        scene.ambientColor = current_scene.ambient;
+        scene.useRightHandedSystem = true;
+
+        // Create camera
+        current_scene.camera = new UniversalCamera('camera', new Vector3(0.0, 1.8, 10.0), scene);
+        current_scene.camera.setTarget(new Vector3(0.0, 1.8, 0.0));
+        current_scene.camera.upVector = new Vector3(0.0, 1.0, 0.0);
+        current_scene.camera.attachControl(this.canvas, true);
+        current_scene.camera.fov = 35.0 * (Math.PI / 180);
+        current_scene.camera.minZ = 0.1;
+        current_scene.camera.maxZ = 100.0;
+
+        // Create point light sources
+        let light0 = new PointLight('light0', new Vector3(1.0, 1.0, 5.0), scene);
+        light0.diffuse = new Color3(1.0, 1.0, 1.0);
+        light0.specular = new Color3(1.0, 1.0, 1.0);
+        current_scene.lights.push(light0);
+
+        // Create ground mesh
+        let white_texture = RawTexture.CreateRGBTexture(new Uint8Array([255, 255, 255]), 1, 1, scene);
+        let ground_heightmap = new Texture(BASE_URL + 'heightmaps/default.png', scene);
+        ground_mesh.scaling = new Vector3(20.0, 1.0, 20.0);
+        ground_mesh.metadata = {
+            mat_color: new Color3(0.80, 0.65, 0.75),
+            mat_texture: white_texture,
+            mat_specular: new Color3(0.0, 0.0, 0.0),
+            mat_shininess: 1,
+            texture_scale: new Vector2(1.0, 1.0),
+            height_scalar: 1.0,
+            heightmap: ground_heightmap
+        }
+        ground_mesh.material = materials['ground_' + this.shading_alg];
+        
+        // Create other models
+        let cylinder0 = CreateCylinder("cylinder0", {
+            diameterTop: 1,
+            diameterBottom: 1,
+            height: 2,
+            tessellation: 24
+        }, scene);
+        cylinder0.position = new Vector3(3.0, 0.5, 3.0);
+        cylinder0.metadata = {
+            mat_color: new Color3(0.8, 0.1, 0.1),
+            mat_texture: white_texture,
+            mat_specular: new Color3(0.9, 0.9, 0.9),
+            mat_shininess: 64,
+            texture_scale: new Vector2(1.0, 1.0)
+        }
+        cylinder0.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(cylinder0);
+
+        let cylinder1 = CreateCylinder("cylinder1", {
+            diameterTop: 1,
+            diameterBottom: 1,
+            height: 2,
+            tessellation: 24
+        }, scene);
+        cylinder1.position = new Vector3(1.0, 0.5, 3.0);
+        cylinder1.metadata = {
+            mat_color: new Color3(0.2, 0.4, 0.7),
+            mat_texture: white_texture,
+            mat_specular: new Color3(0.5, 0.5, 0.5),
+            mat_shininess: 4,
+            texture_scale: new Vector2(1.0, 1.0)
+        }
+        cylinder1.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(cylinder1);
+
+        let cylinder2 = CreateCylinder("cylinder2", {
+            diameterTop: 1,
+            diameterBottom: 1,
+            height: 2,
+            tessellation: 24
+        }, scene);
+        cylinder2.position = new Vector3(-1.0, 0.5, 3.0);
+        cylinder2.metadata = {
+            mat_color: new Color3(0.1, 0.6, 0.3),
+            mat_texture: white_texture,
+            mat_specular: new Color3(0.1, 0.1, 0.1),
+            mat_shininess: 1,
+            texture_scale: new Vector2(1.0, 1.0)
+        }
+        cylinder2.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(cylinder2);
+
+        let cylinder3 = CreateCylinder("cylinder3", {
+            diameterTop: 1,
+            diameterBottom: 1,
+            height: 2,
+            tessellation: 24
+        }, scene);
+        cylinder3.position = new Vector3(-3.0, 0.5, 3.0);
+        cylinder3.metadata = {
+            mat_color: new Color3(0.10, 0.35, 0.88),
+            mat_texture: white_texture,
+            mat_specular: new Color3(0.5, 0.5, 0.5),
+            mat_shininess: 128,
+            texture_scale: new Vector2(1.0, 1.0)
+        }
+        cylinder3.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(cylinder3);
+
+        // Animation function - called before each frame gets rendered
+        scene.onBeforeRenderObservable.add(() => {
+            // update models and lights here (if needed)
+            // ...
+
+            // update uniforms in shader programs
+            this.updateShaderUniforms(scene_idx, materials['illum_' + this.shading_alg]);
+            this.updateShaderUniforms(scene_idx, materials['ground_' + this.shading_alg]);
+        });
+    }
+
+    createScene3(scene_idx) {
+        let current_scene = this.scenes[scene_idx];
+        let scene = current_scene.scene;
+        let materials = current_scene.materials;
+        let ground_mesh = current_scene.ground_mesh;
+
+        // Set scene-wide / environment values
+        scene.clearColor = current_scene.background_color;
+        scene.ambientColor = current_scene.ambient;
+        scene.useRightHandedSystem = true;
+
+        // Create camera
+        current_scene.camera = new UniversalCamera('camera', new Vector3(0.0, 1.8, 10.0), scene);
+        current_scene.camera.setTarget(new Vector3(0.0, 1.8, 0.0));
+        current_scene.camera.upVector = new Vector3(0.0, 1.0, 0.0);
+        current_scene.camera.attachControl(this.canvas, true);
+        current_scene.camera.fov = 35.0 * (Math.PI / 180);
+        current_scene.camera.minZ = 0.1;
+        current_scene.camera.maxZ = 100.0;
+
+        // Create point light sources
+        let light0 = new PointLight('light0', new Vector3(1.0, 1.0, 5.0), scene);
+        light0.diffuse = new Color3(1.0, 1.0, 1.0);
+        light0.specular = new Color3(1.0, 1.0, 1.0);
+        current_scene.lights.push(light0);
+
+        // Create ground mesh
+        let white_texture = RawTexture.CreateRGBTexture(new Uint8Array([255, 255, 255]), 1, 1, scene);
+        
+        // Create other models
+        let sphere0 = CreateSphere('sphere0', {segments: 16}, scene);
+        sphere0.position = new Vector3(1.0, 0.5, 3.0);
+        sphere0.metadata = {
+            mat_color: new Color3(0.73, 0.21, 0.89),
+            mat_texture: white_texture,
+            mat_specular: new Color3(1.0, 1.0, 1.0),
+            mat_shininess: 128,
+            texture_scale: new Vector2(1.0, 1.0)
+        }
+        sphere0.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(sphere0);
+
+        let sphere1 = CreateSphere('sphere1', {segments: 16}, scene);
+        sphere1.position = new Vector3(3.0, 0.5, 3.0);
+        sphere1.metadata = {
+            mat_color: new Color3(0.45, 0.12, 0.67),
+            mat_texture: white_texture,
+            mat_specular: new Color3(1.0, 1.0, 1.0),
+            mat_shininess: 128,
+            texture_scale: new Vector2(1.0, 1.0)
+        }
+        sphere1.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(sphere1);
+
+        let sphere2 = CreateSphere('sphere2', {segments: 16}, scene);
+        sphere2.position = new Vector3(-1.0, 0.5, 3.0);
+        sphere2.metadata = {
+            mat_color: new Color3(0.34, 0.98, 0.56),
+            mat_texture: white_texture,
+            mat_specular: new Color3(1.0, 1.0, 1.0),
+            mat_shininess: 128,
+            texture_scale: new Vector2(1.0, 1.0)
+        }
+        sphere2.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(sphere2);
+
+        let sphere3 = CreateSphere('sphere3', {segments: 16}, scene);
+        sphere3.position = new Vector3(-1.0, 2.5, 3.0);
+        sphere3.metadata = {
+            mat_color: new Color3(0.09, 0.87, 0.32),
+            mat_texture: white_texture,
+            mat_specular: new Color3(1.0, 1.0, 1.0),
+            mat_shininess: 128,
+            texture_scale: new Vector2(1.0, 1.0)
+        }
+        sphere3.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(sphere3);
+
+        let sphere4 = CreateSphere('sphere4', {segments: 16}, scene);
+        sphere4.position = new Vector3(1.0, 2.5, 3.0);
+        sphere4.metadata = {
+            mat_color: new Color3(168/255, 115/255, 50/155),
+            mat_texture: white_texture,
+            mat_specular: new Color3(1.0, 1.0, 1.0),
+            mat_shininess: 128,
+            texture_scale: new Vector2(1.0, 1.0)
+        }
+        sphere4.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(sphere4);
+
+        let sphere5 = CreateSphere('sphere5', {segments: 16}, scene);
+        sphere5.position = new Vector3(3.0, 2.5, 3.0);
+        sphere5.metadata = {
+            mat_color: new Color3(54/255, 50/255, 158/255),
+            mat_texture: white_texture,
+            mat_specular: new Color3(1.0, 1.0, 1.0),
+            mat_shininess: 128,
+            texture_scale: new Vector2(1.0, 1.0)
+        }
+        sphere5.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(sphere5);
+
+        let sphere6 = CreateSphere('sphere6', {segments: 16}, scene);
+        sphere6.position = new Vector3(3.0, 4.5, 3.0);
+        sphere6.metadata = {
+            mat_color: new Color3(0.14, 0.78, 0.29),
+            mat_texture: white_texture,
+            mat_specular: new Color3(1.0, 1.0, 1.0),
+            mat_shininess: 128,
+            texture_scale: new Vector2(1.0, 1.0)
+        }
+        sphere6.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(sphere6);
+
+        let sphere7 = CreateSphere('sphere7', {segments: 16}, scene);
+        sphere7.position = new Vector3(1.0, 4.5, 3.0);
+        sphere7.metadata = {
+            mat_color: new Color3(0.68, 0.37, 0.91),
+            mat_texture: white_texture,
+            mat_specular: new Color3(1.0, 1.0, 1.0),
+            mat_shininess: 128,
+            texture_scale: new Vector2(1.0, 1.0)
+        }
+        sphere7.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(sphere7);
+
+        let sphere8 = CreateSphere('sphere8', {segments: 16}, scene);
+        sphere8.position = new Vector3(-1.0, 4.5, 3.0);
+        sphere8.metadata = {
+            mat_color: new Color3(168/255, 50/255, 74/255),
+            mat_texture: white_texture,
+            mat_specular: new Color3(1.0, 1.0, 1.0),
+            mat_shininess: 128,
+            texture_scale: new Vector2(1.0, 1.0)
+        }
+        sphere8.material = materials['illum_' + this.shading_alg];
+        current_scene.models.push(sphere8);
+        
 
         // Animation function - called before each frame gets rendered
         scene.onBeforeRenderObservable.add(() => {
