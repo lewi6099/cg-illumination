@@ -30,14 +30,21 @@ out vec3 diffuse_illum;
 out vec3 specular_illum;
 
 void main() {
-    mat3 new_matrix = mat3(world); //create a 3x3 matrix of the world matrix
-    mat3 transpose_matrix = transpose(new_matrix); //transpose this world matrix 
-    mat3 inverse_matrix = inverse(transpose_matrix);
+    // Height displacement formulas:
+    float gray = texture(heightmap, uv).r;
+    float d = 2.0 * height_scalar * (gray - 0.5);
 
-    // Calculations to be used for illum equations
-    vec3 model_position = vec3(world * vec4(position, 1.0));
-    vec3 model_normal = normalize(inverse_matrix * vec3(0.0, 1.0, 0.0));
-    
+    // For each neighbor, move over/up by a little bit, add the displacement we just calculated
+    vec3 neighbor1_pos = vec3(position.x + 0.01, position.y, position.z);
+    vec3 neighbor2_pos = vec3(position.x, position.y + 0.01, position.z); 
+
+    vec3 tangent = neighbor1_pos - position;
+    vec3 bitangent = neighbor2_pos - position;
+    vec3 model_normal = normalize(cross(tangent, bitangent));
+
+    vec4 world_pos = world * vec4(position, 1.0);
+    vec3 model_position = vec3(world_pos.x, world_pos.y + d, world_pos.z);
+
     //      ------ Accounting for 3 different lights -----
     // ------------------Light 0
     vec3 L0 = normalize(light_positions[0] - model_position); // normalized light direction
@@ -71,5 +78,5 @@ void main() {
     model_uv = uv;
 
     // Transform and project vertex from 3D world-space to 2D screen-space
-    gl_Position = projection * view * world * vec4(position, 1.0);
+    gl_Position = projection * view * vec4(model_position, 1.0);
 }

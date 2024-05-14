@@ -21,8 +21,6 @@ out vec2 model_uv;
 
 void main() {
     // Pass vertex position onto the fragment shader
-
-    // ------- HAVE PROF CHECK THESE 4 LINES OF CODE - they don't seem to be doing anything for multiplying by the inverse matrix--
     mat3 new_matrix = mat3(world); //create a 3x3 matrix of the world matrix
     mat3 transpose_matrix = transpose(new_matrix); //transpose this world matrix 
     mat3 inverse_matrix = inverse(transpose_matrix); //take the inverse of this transpose matrix
